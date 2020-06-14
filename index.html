@@ -15,25 +15,26 @@
     }
 
     form {
-      background: #000;
+      background: gray;
       padding: 3px;
       position: fixed;
-      bottom: 0;
+      bottom: 0px;
       width: 100%;
+      padding-bottom: 30px;
     }
 
     form input {
       border: 0;
       padding: 10px;
-      width: 90%;
+      width: 70%;
       margin-right: 0.5%;
     }
 
     form button {
-      width: 9%;
+      width: 28%;
       background: rgb(130, 224, 255);
       border: none;
-      padding: 10px;
+      padding: 20px;
     }
 
     #messages {
@@ -116,7 +117,7 @@
   </div>
 
 
-  <ul id="messages"></ul>
+  <ul id="messages" style="margin-bottom: 100px;"></ul>
   <form action="">
     <div id="feedback"></div>
     <input id="m" autocomplete="off" /><button>Send</button>
@@ -149,6 +150,7 @@
     })
 
     $('#m').bind("keypress", () => {
+      $("html, body").animate({ scrollTop: $('#messages').height() }, 100);
       socket.emit('typing');
     })
 
@@ -158,13 +160,14 @@
 
 
     socket.on('typing', (data) => {
-        $('#feedback').fadeIn();
-        $('#feedback').html("<p><i>" + data.username + " is typing a message...." + "</i></p>");
+      $('#feedback').fadeIn();
+      $('#feedback').html("<p><i>" + data.username + " is typing a message...." + "</i></p>");
     })
 
     socket.on('stop typing', (data) => {
-      setTimeout($('#feedback').fadeOut(), 1000); 
+      setTimeout($('#feedback').fadeOut(), 1000);
     })
+
 
   });
 </script>
