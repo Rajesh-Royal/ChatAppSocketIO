@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 18px Helvetica, Arial;
+    }
+
+    form {
+      background: #000;
+      padding: 3px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    form input {
+      border: 0;
+      padding: 10px;
+      width: 90%;
+      margin-right: 0.5%;
+    }
+
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages li {
+      padding: 5px 10px;
+    }
+
+    #messages li:nth-child(odd) {
+      background: #eee;
+    }
+
+    .username {
+      font-size: 16px;
+      color: cornflowerblue;
+    }
+
+    #feedback {
+      margin-bottom: 10px;
+      color: white;
+      padding: 10px;
+
+    }
+
+    #overlay {
+      height: 100%;
+      width: 100%;
+      z-index: 20;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .inner input {
+      font-size: 18px;
+      padding: 15px;
+      border: none;
+    }
+
+    input:focus {
+      outline: none;
+    }
+
+    .inner button:focus {
+      outline: none;
+    }
+
+    .inner button {
+      background: moccasin;
+      color: black;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 16px 30px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .inner button:hover {
+      background: rgb(255, 218, 153);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="overlay">
+    <div class="inner">
+      <input type="text" id="user" autocomplete="off"><button id="senduser"
+        placeholder="Enter any username for profile">Start</button>
+    </div>
+
+  </div>
+
+
+  <ul id="messages"></ul>
+  <form action="">
+    <div id="feedback"></div>
+    <input id="m" autocomplete="off" /><button>Send</button>
+  </form>
+</body>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+  $(function () {
+    var socket = io();
+    var username = $('#user');
+    var senduser = $('#senduser');
+
+    $('form').submit(function (e) {
+      e.preventDefault(); // prevents page reloading
+      socket.emit('chat message', $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+
+    socket.on('chat message', function (msg) {
+      $('#messages').append($('<li>').html(msg));
+    });
+
+    senduser.click(function () {
+      console.log(username.val());
+      socket.emit("change_username", { username: username.val() })
+      $('#overlay').hide();
+    })
+
+    $('#m').bind("keypress", () => {
+      socket.emit('typing');
+    })
+
+    $('#m').keyup(function () {
+      socket.emit('stop typing');
+    });
+
+
+    socket.on('typing', (data) => {
+        $('#feedback').fadeIn();
+        $('#feedback').html("<p><i>" + data.username + " is typing a message...." + "</i></p>");
+    })
+
+    socket.on('stop typing', (data) => {
+      setTimeout($('#feedback').fadeOut(), 1000); 
+    })
+
+  });
+</script>
+
+</html>
