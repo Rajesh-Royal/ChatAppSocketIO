@@ -1,7 +1,7 @@
-<!doctype html>
-<html>
+ <html>
 
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Socket.IO chat</title>
   <style>
     * {
@@ -11,13 +11,14 @@
     }
 
     body {
-      font: 18px Helvetica, Arial;
+      font: 16px Helvetica, Arial;
     }
 
     form {
       background: gray;
       padding: 3px;
       position: fixed;
+      display: flex;
       bottom: 0px;
       width: 100%;
       padding-bottom: 30px;
@@ -26,21 +27,22 @@
     form input {
       border: 0;
       padding: 10px;
-      width: 70%;
+      width: 100%;
       margin-right: 0.5%;
     }
 
     form button {
-      width: 28%;
       background: rgb(130, 224, 255);
       border: none;
-      padding: 20px;
+      padding: 10px 20px;
     }
 
     #messages {
       list-style-type: none;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
     }
 
     #messages li {
@@ -75,11 +77,21 @@
       justify-content: center;
       align-items: center;
     }
+    .inner{
+      width: 98vw;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
 
     .inner input {
       font-size: 18px;
       padding: 15px;
       border: none;
+      height: 100px;
+      width: 100%;
     }
 
     input:focus {
@@ -98,10 +110,18 @@
       padding: 16px 30px;
       border: none;
       cursor: pointer;
+      height: 100px;
+      width: 100%;
     }
 
     .inner button:hover {
       background: rgb(255, 218, 153);
+    }
+    ul{
+      display: flex;
+      justify-content: left;
+      flex-direction: column;
+      max-width: 100%;
     }
   </style>
 </head>
@@ -111,7 +131,7 @@
   <div id="overlay">
     <div class="inner">
       <input type="text" id="user" autocomplete="off"><button id="senduser"
-        placeholder="Enter any username for profile">Start</button>
+        placeholder="Enter any username for profile" value="username">Start</button>
     </div>
 
   </div>
