@@ -1,128 +1,12 @@
- <html>
+<html>
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="https://www.freepngimg.com/download/chat/12-2-chat-png.png" type="image/gif" sizes="16x16">
   <title>Socket.IO chat</title>
+  <link rel="stylesheet" href="style.css"/>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font: 16px Helvetica, Arial;
-    }
-
-    form {
-      background: gray;
-      padding: 3px;
-      position: fixed;
-      display: flex;
-      bottom: 0px;
-      width: 100%;
-      padding-bottom: 30px;
-    }
-
-    form input {
-      border: 0;
-      padding: 10px;
-      width: 100%;
-      margin-right: 0.5%;
-    }
-
-    form button {
-      background: rgb(130, 224, 255);
-      border: none;
-      padding: 10px 20px;
-    }
-
-    #messages {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #messages li {
-      padding: 5px 10px;
-    }
-
-    #messages li:nth-child(odd) {
-      background: #eee;
-    }
-
-    .username {
-      font-size: 16px;
-      color: cornflowerblue;
-    }
-
-    #feedback {
-      margin-bottom: 10px;
-      color: white;
-      padding: 10px;
-
-    }
-
-    #overlay {
-      height: 100%;
-      width: 100%;
-      z-index: 20;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background: black;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .inner{
-      width: 98vw;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .inner input {
-      font-size: 18px;
-      padding: 15px;
-      border: none;
-      height: 100px;
-      width: 100%;
-    }
-
-    input:focus {
-      outline: none;
-    }
-
-    .inner button:focus {
-      outline: none;
-    }
-
-    .inner button {
-      background: moccasin;
-      color: black;
-      font-size: 18px;
-      font-weight: 600;
-      padding: 16px 30px;
-      border: none;
-      cursor: pointer;
-      height: 100px;
-      width: 100%;
-    }
-
-    .inner button:hover {
-      background: rgb(255, 218, 153);
-    }
-    ul{
-      display: flex;
-      justify-content: left;
-      flex-direction: column;
-      max-width: 100%;
-    }
+    
   </style>
 </head>
 
@@ -130,17 +14,20 @@
 
   <div id="overlay">
     <div class="inner">
-      <input type="text" id="user" autocomplete="off"><button id="senduser"
-        placeholder="Enter any username for profile" value="username">Start</button>
+      <input type="text" id="user" autocomplete="off" placeholder="Enter any username for profile"><button id="senduser"
+      >Start</button>
     </div>
 
   </div>
 
 
-  <ul id="messages" style="margin-bottom: 100px;"></ul>
-  <form action="">
+  <ul id="messages"></ul>
+
+  <form action="" style="display: flex; flex-direction: column;">
     <div id="feedback"></div>
-    <input id="m" autocomplete="off" /><button>Send</button>
+    <label for="uploadfile"><span style="color: white;">Filetypes: mp4, mkv, ogg, mp3, wav, aac, all image format including gifs</span>
+    <input type="file" id="uploadfile"/></label>
+    <input id="m" autocomplete="off" placeholder="type message"/><button>Send</button>
   </form>
 </body>
 
@@ -187,6 +74,47 @@
     socket.on('stop typing', (data) => {
       setTimeout($('#feedback').fadeOut(), 1000);
     })
+
+
+    //serving images and video files
+    $('#uploadfile').bind('change', function(e){
+        var data = e.originalEvent.target.files[0];
+        readThenSendFile(data);      
+    });
+    
+    function readThenSendFile(data){
+    
+        var reader = new FileReader();
+        reader.onload = function(evt){
+            var msg ={};
+            msg.username = username;
+            msg.file = evt.target.result;
+            msg.fileName = data.name;
+            socket.emit('base64 file', msg);
+        };
+        reader.readAsDataURL(data);
+    }
+    socket.on('base64 file' ,(data) => {
+      //appending data according to data types
+      let filetype = data.fileName.split('.').pop();
+      if(filetype == 'mp4' || filetype == 'ogg' || filetype == 'mkv'){
+        $('#messages').append($('<li>').html(`<p class="username">${data.username}</p><video class="imgupload" src="${data.file}" height="400" width="400" controls/>`));
+      }else if(filetype == 'mp3' || filetype == 'wav' || filetype == 'aac'){
+        $('#messages').append($('<li>').html(`<p class="username">${data.username}</p><audio class="imgupload" src="${data.file}" height="400" width="400" controls/>`));
+      }else{
+        $('#messages').append($('<li>').html(`<p class="username">${data.username}</p><img class="imgupload" src="${data.file}" height="200" width="200"/>`));
+      }
+    })
+
+    //drawing image data
+    // socket.on("image", function (info) {
+    //   if (info.image) {
+    //     var img = new Image();
+    //     img.src = 'data:image/jpeg;base64,' + info.buffer;
+    //     ctx.drawImage(img, 50, 30);
+    //     console.log('img draw');
+    //   }
+    // });
 
 
   });
