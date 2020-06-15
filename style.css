@@ -31,6 +31,11 @@
     padding: 10px 20px;
     margin-top: 5px;
   }
+  #progress{
+    padding: 5px;
+    color: #22f11f;
+    display: none;
+  }
 
   #messages {
     list-style-type: none;
