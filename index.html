@@ -36,6 +36,20 @@
 
     <input id="m" autocomplete="off" placeholder="type message" /><button>Send</button>
   </form>
+
+
+  <!-- The Modal -->
+  <div id="myModal" class="modal">
+
+    <!-- The Close Button -->
+    <span class="close">&times;</span>
+
+    <!-- Modal Content (The Image) -->
+    <img class="modal-content" id="img01">
+
+    <!-- Modal Caption (Image Text) -->
+    <div id="caption"></div>
+  </div>
 </body>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -104,16 +118,16 @@
       };
       reader.readAsDataURL(data);
 
-      reader.onprogress = function(currentFile) {
-            if (currentFile.lengthComputable) {
-                var progress = parseInt(((currentFile.loaded / currentFile.total) * 100), 10);
-                $('#percentage').html(progress);
-                console.log(progress);
-            }
+      reader.onprogress = function (currentFile) {
+        if (currentFile.lengthComputable) {
+          var progress = parseInt(((currentFile.loaded / currentFile.total) * 100), 10);
+          $('#percentage').html(progress);
+          console.log(progress);
         }
-      reader.onerror = function() {
-            alert("Could not read the file: large file size");
-        };
+      }
+      reader.onerror = function () {
+        alert("Could not read the file: large file size");
+      };
     }
 
     socket.on('base64 file', (data) => {
@@ -126,7 +140,7 @@
       } else if (filetype == 'mp3' || filetype == 'wav' || filetype == 'aac') {
         $('#messages').append($('<li>').html(`<p class="username">${data.username}</p><audio class="imgupload" src="${data.file}" height="400" width="400" controls/>`));
       } else {
-        $('#messages').append($('<li>').html(`<p class="username">${data.username}</p><img class="imgupload" src="${data.file}" height="200" width="200"/>`));
+        $('#messages').append($('<li>').html(`<p class="username">${data.username}</p><img class="imgupload" src="${data.file}" height="200" width="200" onclick="showimg(this)"/>`));
       }
     })
 
@@ -140,8 +154,28 @@
     //   }
     // });
 
-
   });
+
+   // Get the modal
+   var modal = document.getElementById("myModal");
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+function showimg(data) {
+  var img = data;
+  var modalImg = document.getElementById("img01");
+  img.onclick = function () {
+    modal.style.display = "block";
+    modalImg.src = this.src;
+  }
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function () {
+    modal.style.display = "none";
+  }
+}
 </script>
 
 </html>
