@@ -3,6 +3,8 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="https://www.freepngimg.com/download/chat/12-2-chat-png.png" type="image/gif" sizes="16x16">
+  <script type="text/javascript" src="/node_modules//browser-image-compression//dist/browser-image-compression.js"
+    defer="defer"></script>
   <title>Socket.IO chat</title>
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -53,7 +55,7 @@
 </body>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="/node_modules//jquery/dist/jquery.min.js"></script>
 <script>
   $(function () {
     var socket = io();
@@ -98,9 +100,33 @@
 
 
     //serving images and video files
-    $('#uploadfile').bind('change', function (e) {
-      var data = e.originalEvent.target.files[0];
-      readThenSendFile(data);
+    // $('#uploadfile').bind('change', function (e) {
+    //   var data = e.originalEvent.target.files[0];
+    //   readThenSendFile(data);
+    // });
+
+    $('#uploadfile').bind('change', async function (event) {
+      
+        const imageFile = event.target.files[0];
+        console.log('originalFile instanceof Blob', imageFile instanceof Blob); // true
+        console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 600,
+          useWebWorker: true
+        }
+        try {
+          const compressedFile = await imageCompression(imageFile, options);
+          console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+          console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+
+          await readThenSendFile(compressedFile); //readin the compressed file
+        } catch (error) {
+          console.log(error);
+          await readThenSendFile(imageFile); // if filetype is not image then sent orignal data without compression
+        }
+
     });
 
     function readThenSendFile(data) {
@@ -144,38 +170,52 @@
       }
     })
 
-    //drawing image data
-    // socket.on("image", function (info) {
-    //   if (info.image) {
-    //     var img = new Image();
-    //     img.src = 'data:image/jpeg;base64,' + info.buffer;
-    //     ctx.drawImage(img, 50, 30);
-    //     console.log('img draw');
-    //   }
-    // });
-
   });
 
-   // Get the modal
-   var modal = document.getElementById("myModal");
+  //compressing image
+  // async function handleImageUpload(event) {
 
-// Get the image and insert it inside the modal - use its "alt" text as a caption
-function showimg(data) {
-  var img = data;
-  var modalImg = document.getElementById("img01");
-  img.onclick = function () {
-    modal.style.display = "block";
-    modalImg.src = this.src;
+  //   const imageFile = event.target.files[0];
+  //   console.log('originalFile instanceof Blob', imageFile instanceof Blob); // true
+  //   console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
+  //   const options = {
+  //     maxSizeMB: 1,
+  //     maxWidthOrHeight: 600,
+  //     useWebWorker: true
+  //   }
+  //   try {
+  //     const compressedFile = await imageCompression(imageFile, options);
+  //     console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+  //     console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+
+  //     await uploadToServer(compressedFile); // write your own logic
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+
+  // }
+
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the image and insert it inside the modal - use its "alt" text as a caption
+  function showimg(data) {
+    var img = data;
+    var modalImg = document.getElementById("img01");
+    img.onclick = function () {
+      modal.style.display = "block";
+      modalImg.src = this.src;
+    }
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+      modal.style.display = "none";
+    }
   }
-
-  // Get the <span> element that closes the modal
-  var span = document.getElementsByClassName("close")[0];
-
-  // When the user clicks on <span> (x), close the modal
-  span.onclick = function () {
-    modal.style.display = "none";
-  }
-}
 </script>
 
 </html>

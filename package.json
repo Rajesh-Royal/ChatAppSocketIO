@@ -12,7 +12,9 @@
   "author": "Rajesh",
   "license": "MIT",
   "dependencies": {
+    "browser-image-compression": "^1.0.12",
     "express": "^4.17.1",
+    "jquery": "^3.5.1",
     "nodemon": "^2.0.4",
     "socket.io": "^2.3.0"
   }

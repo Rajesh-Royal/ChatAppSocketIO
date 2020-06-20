@@ -3,7 +3,8 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var fs = require('fs'); // required for file serving
-var port = process.env.PORT || 5000;
+// var imageCompression = require('browser-image-compression'); //image compression
+var port = process.env.PORT || 4000;
 
 app.use(express.static(__dirname));
 
@@ -16,7 +17,7 @@ app.get('/', (req, res) => {
 });
 io.on('connection', (socket) => {
   socket.username = "Anonymouse";
-  console.log(socket.username + ' connected');
+  console.log(socket.username + ' connected on socket ', socket);
   socket.on('change_username', (data) => {
     if (data.username == '') socket.username = 'Anonymouse';
     else socket.username = data.username;
