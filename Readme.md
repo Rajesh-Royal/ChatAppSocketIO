@@ -9,6 +9,6 @@
     "socket.io": "^2.3.0"
   }
   ```
-*** Update for image compression support max image size 1MB after compression. Other data will be preoceed without compression
+*** Update for image compression support max image size 1MB after compression. Other data will be preoceed without compression it process data in Base64 format so big-size media may not support or take long time to get uploaded.
 
 Heroku demo - https://socketio-chat-app.herokuapp.com/
