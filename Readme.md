@@ -11,4 +11,4 @@
   ```
 *** Update for image compression support max image size 1MB after compression. Other data will be preoceed without compression
 
-Heroku demo - https://peaceful-ravine-28739.herokuapp.com/
+Heroku demo - https://socketio-chat-app.herokuapp.com/
